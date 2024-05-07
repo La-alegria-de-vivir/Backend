@@ -1,4 +1,4 @@
-import Reservation from '../models/reserveRoomsModels.js';
+import Reservation from '../Models/reserveRoomsModels.js';
 
 // Controlador para crear una reserva
 export const createReservation = async (req, res) => {

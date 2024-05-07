@@ -2,31 +2,25 @@ import mongoose from "mongoose";
 
 const menuSchema = new mongoose.Schema(
     {
-        userId: {
-            type: String,
-            required: true,
-        },
-        content: {
-            type: String,
-            required: true,
-        },
         title: {
             type: String,
             required: true,
-            unique: true,
+        },
+        price: {
+            type: Number,
+            required: true,
         },
         image: {
             type: String,
-            default: 'https://vxhtabpxdsjx-u4747.pressidiumcdn.com/wp-content/uploads/2022/09/book_blogs_2-1024x576.jpg',
+            default: 'https://images.pexels.com/photos/64208/pexels-photo-64208.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
         },
-        category: {
-            type: String,
-            default: 'uncategorized'
-        },
-        slug: {
+        alergenos: {
             type: String,
             required: true,
-            unique: true,
+        },
+        description: {
+            type: String,
+            required: true,
         },
     },{timestamps:true}
 );

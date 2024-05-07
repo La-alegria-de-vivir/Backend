@@ -4,11 +4,34 @@
 import mongoose from "mongoose";
 
 const reservationSchema = new mongoose.Schema({
-  user: { type: String, require: false }, // Cambia el tipo a String si solo necesitas el nombre de usuario
-  date: { type: Date, required: true },
-  duration: {type : Number, required: true },
-  hour: { type: String, required: true }, // Cambia el tipo a String si solo necesitas la hora
-  room: { type: String, required: true } // Cambia el tipo a String si solo necesitas el nombre de la sala
+  name: { 
+    type: String,
+     require: true 
+    }, // Cambia el tipo a String si solo necesitas el nombre de usuario
+  date: { 
+    type: Date, 
+    required: true 
+  },
+  hour: {
+    type : Number, 
+    required: true 
+  },
+  place: { 
+    type: String, 
+    required: true 
+  }, // Cambia el tipo a String si solo necesitas la hora
+  people: { 
+    type: Number, 
+    required: true 
+  }, // Cambia el tipo a String si solo necesitas el nombre de la sala
+  telefnumber: {
+    type : Number, 
+    required: true 
+  },
+  email: {
+    type : String, 
+    required: true 
+  },
 }, { collection: "reservations" });
 
 const Reservation = mongoose.model('Reservation', reservationSchema);
