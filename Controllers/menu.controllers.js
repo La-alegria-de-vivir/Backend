@@ -1,38 +1,38 @@
 import { set } from "mongoose";
-import Post from "../models/post.model.js";
-import { errorHandler } from "../utils/error.js"
+import Menu from "../Models/menu.model.js";
+import { errorHandler } from "../Middlewares/error.js"
 
 export const create = async (req, res, next) =>{
 console.log(req.user);
     if (!req.user.isAdmin) {
-        return next(errorHandler(403, 'You are not allowed to create a post'))
+        return next(errorHandler(403, 'You are not allowed to create a menu'))
     }
     if (!req.body.title || !req.body.content) {
         return next(errorHandler(400, 'Please provide all required fields'))
     }
     const slug = req.body.title.split(' ').join('-').toLowerCase().replace(/[^a-zA-Z0-9-]/g,'');
-    const newPost= new Post({
+    const newMenu= new Menu({
         ...req.body, slug, userId: req.user.id,
     });
     try {
-        const savedPost = await newPost.save();
-        res.status(201).json(savedPost);
+        const savedMenu = await newMenu.save();
+        res.status(201).json(savedMenu);
     } catch (error) {
         next(error);
     }
 } ;
 
-export const getpost = async (req, res, next) =>{
+export const getMenu = async (req, res, next) =>{
     try {
         const startIndex = parseInt(req.query.startIndex) || 0;
         const limit = parseInt(req.query.limit) || 20;
         const sortDirection = req.query.order === 'asc' ? 1 : -1;
         
-        const post = await Post.find({
+        const menu = await Menu.find({
             ...(req.query.userId && { userId: req.query.userId }),
             ...(req.query.category && { category: req.query.category }),
             ...(req.query.slug && { slug: req.query.slug }),
-            ...(req.query.postId && { _id: req.query.postId }), // Coma agregada aquí
+            ...(req.query.menuntId && { _id: req.query.menuId }), // Coma agregada aquí
             ...(req.query.searchTerm && {
                 $or:[
                     { title: { $regex: req.query.searchTerm, $options: 'i' } }, // Espacio eliminado después de 'i'
@@ -41,7 +41,7 @@ export const getpost = async (req, res, next) =>{
             })
         }).sort({ update: sortDirection}).skip(startIndex).limit(limit);
 
-        const totalPost = await Post.countDocuments();
+        const totalMenu = await Menu.countDocuments();
 
         const now = new Date();
 
@@ -51,14 +51,14 @@ export const getpost = async (req, res, next) =>{
             now.getDate()
         );
 
-        const lastMonthPost = await Post.countDocuments({
+        const lastMonthMenu = await Menu.countDocuments({
             createdAt: {$gte: oneMonthAgo},
         });
 
         res.status(200).json({
-            post,
-            totalPost,
-            lastMonthPost,
+            menu,
+            totalMenu,
+            lastMonthMenu,
         });
 
     } catch (error) {
@@ -66,25 +66,25 @@ export const getpost = async (req, res, next) =>{
     }
 };
 
-export const deletepost = async (req, res, next) => {
+export const deletemenu = async (req, res, next) => {
     if (!req.user.isAdmin || req.user.id !== req.params.userId) {
-        return next (errorHandler(403, 'You are not allowed to delete this post'));
+        return next (errorHandler(403, 'You are not allowed to delete this menu'));
     }
     try {
-        await Post.findByIdAndDelete(req.params.postId);
-        res.status(200).json('The post has been deleted');
+        await Menu.findByIdAndDelete(req.params.menuId);
+        res.status(200).json('The menu has been deleted');
     } catch (error) {
         next(error);
     }
 };
 
-export const updatepost = async (req, res, next) => {
+export const updatemenu = async (req, res, next) => {
     if (!req.user.isAdmin || req.user.id !== req.params.userId) {
-      return next(errorHandler(403, 'You are not allowed to update this post'));
+      return next(errorHandler(403, 'You are not allowed to update this menu'));
     }
     try {
-      const updatedPost = await Post.findByIdAndUpdate(
-        req.params.postId,
+      const updatedMenu = await Menu.findByIdAndUpdate(
+        req.params.menuId,
         {
           $set: {
             title: req.body.title,
@@ -95,7 +95,7 @@ export const updatepost = async (req, res, next) => {
         },
         { new: true }
       );
-      res.status(200).json(updatedPost);
+      res.status(200).json(updatedMenu);
     } catch (error) {
       next(error);
     }

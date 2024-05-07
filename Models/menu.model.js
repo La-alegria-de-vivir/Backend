@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const postSchema = new mongoose.Schema(
+const menuSchema = new mongoose.Schema(
     {
         userId: {
             type: String,
@@ -31,6 +31,6 @@ const postSchema = new mongoose.Schema(
     },{timestamps:true}
 );
 
-const Post = mongoose.model('Post', postSchema);
+const Menu = mongoose.model('Menu', menuSchema);
 
-export default Post;
+export default Menu;

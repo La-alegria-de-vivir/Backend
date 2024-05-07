@@ -1,11 +1,11 @@
 import express from 'express';
-import { google, login, register } from '../controllers/auth.Controller.js';
-import { limitLogin } from '../middlewares/timeout.js';
+import { signin, signup } from '../Controllers/auth.controllers.js';
+import { limitLogin } from '../Middlewares/timeout.js';
+
 
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', limitLogin,login,);
-router.post('/google', google);
+router.post('/register', signup);
+router.post('/login', limitLogin ,signin);
 
 export default router;

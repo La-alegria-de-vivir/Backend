@@ -1,11 +1,9 @@
-import express from 'express';
+import express from "express";
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import userRoutes from './routes/user.Routes.js';
-import authRoutes from './routes/auth.Routes.js';
-import postRoutes from './routes/post.routes.js'
-import commentRoute from './routes/comment.Routes.js'
-import cookieParser from 'cookie-parser';
+import userRoutes from './Routes/user.route.js';
+import authRoutes from './Routes/auth.Routes.js';
+import menuRoutes from './Routes/menu.route.js'
 
 
 
@@ -23,7 +21,6 @@ mongoose
 const app = express();
 
 app.use(express.json());
-app.use(cookieParser());
 
 app.listen(3000, () =>{
     console.log('Server is runnig on port 3000');
@@ -31,8 +28,7 @@ app.listen(3000, () =>{
 
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/post', postRoutes);
-app.use('/api/comment', commentRoute);
+app.use('/api/menu', menuRoutes);
 
 
 
