@@ -5,7 +5,7 @@ import { limitLogin } from '../Middlewares/timeout.js';
 
 const router = express.Router();
 
-router.post('/register', signup);
-router.post('/login', limitLogin ,signin);
+router.post('/signup', signup);
+router.post('/signin', limitLogin ,signin);
 
 export default router;

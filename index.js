@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import userRoutes from './Routes/user.route.js';
 import authRoutes from './Routes/auth.Routes.js';
 import menuRoutes from './Routes/menu.route.js'
-
+import cookieParser from "cookie-parser";
 
 
 dotenv.config();
@@ -19,6 +19,7 @@ mongoose
     
     
 const app = express();
+app.use(cookieParser());
 
 app.use(express.json());
 
