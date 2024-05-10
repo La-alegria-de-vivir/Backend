@@ -22,6 +22,10 @@ const menuSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        slug: {
+            type: String,
+            unique: true // Esto hace que el campo sea único
+        }
     },{timestamps:true}
 );
 

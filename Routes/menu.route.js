@@ -6,7 +6,7 @@ import { create, deletemenu, getMenu, updatemenu } from '../Controllers/menu.con
 const router = express.Router();
 
 router.post('/create', verifyToken, create)
-router.get('/getMEN', getMenu)
+router.get('/getmenu', getMenu)
 router.delete('/deletemenu/:menutId/:userId', verifyToken, deletemenu);
 router.put(`/updatemenu/:menuId/:userId`, verifyToken, updatemenu);
 
