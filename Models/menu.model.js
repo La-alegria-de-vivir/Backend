@@ -16,7 +16,7 @@ const menuSchema = new mongoose.Schema(
         },
         alergenos: {
             type: String,
-            required: true,
+            required: false,
         },
         description: {
             type: String,

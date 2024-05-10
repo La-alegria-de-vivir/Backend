@@ -7,7 +7,7 @@ console.log(req.user);
     if (!req.user.isAdmin) {
         return next(errorHandler(403, 'You are not allowed to create a menu'))
     }
-    if (!req.body.title || !req.body.content) {
+    if (!req.body.title || !req.body.price || !req.body.description) {
         return next(errorHandler(400, 'Please provide all required fields'))
     }
     const slug = req.body.title.split(' ').join('-').toLowerCase().replace(/[^a-zA-Z0-9-]/g,'');
