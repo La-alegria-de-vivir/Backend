@@ -32,6 +32,10 @@ const reservationSchema = new mongoose.Schema({
     type : String, 
     required: true 
   },
+  service: {
+    type: String,
+    required: true
+  }
 }, { collection: "reservations" });
 
 const Reservation = mongoose.model('Reservation', reservationSchema);

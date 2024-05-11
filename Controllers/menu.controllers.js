@@ -25,7 +25,7 @@ console.log(req.user);
 export const getMenu = async (req, res, next) =>{
     try {
         const startIndex = parseInt(req.query.startIndex) || 0;
-        const limit = parseInt(req.query.limit) || 20;
+        const limit = parseInt(req.query.limit) || 6;
         const sortDirection = req.query.order === 'asc' ? 1 : -1;
         
         const menu = await Menu.find({
@@ -33,12 +33,6 @@ export const getMenu = async (req, res, next) =>{
             ...(req.query.category && { category: req.query.category }),
             ...(req.query.slug && { slug: req.query.slug }),
             ...(req.query.menuntId && { _id: req.query.menuId }), // Coma agregada aquí
-            ...(req.query.searchTerm && {
-                $or:[
-                    { title: { $regex: req.query.searchTerm, $options: 'i' } }, // Espacio eliminado después de 'i'
-                    { content: { $regex: req.query.searchTerm, $options: 'i' } } // Espacio eliminado después de 'i'
-                ]
-            })
         }).sort({ update: sortDirection}).skip(startIndex).limit(limit);
 
         const totalMenu = await Menu.countDocuments();

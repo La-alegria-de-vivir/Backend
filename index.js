@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import userRoutes from './Routes/user.route.js';
 import authRoutes from './Routes/auth.Routes.js';
 import menuRoutes from './Routes/menu.route.js'
+import reserveRoutes from './Routes/reserveRoomsRoutes.js'
 import cookieParser from "cookie-parser";
 
 
@@ -30,6 +31,7 @@ app.listen(3000, () =>{
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/menu', menuRoutes);
+app.use("/api/reserve", reserveRoutes );
 
 
 
