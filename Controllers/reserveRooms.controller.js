@@ -1,35 +1,41 @@
+// 
+
 import Reservation from '../Models/reserveRoomsModels.js';
 
 // Controlador para crear una reserva
 export const createReservation = async (req, res) => {
-  const { user, date, duration,  hour, room } = req.body;
+  const { name, date, hour, place, people, phoneNumber } = req.body;
 
   try {
-    // Verificar si ya existe una reserva para la misma sala en el mismo día y hora
-    const existingReservation = await Reservation.findOne({ room, date, hour });
-
-    // Si existe una reserva y el usuario es diferente, devuelve un mensaje de error
-    if (existingReservation && existingReservation.user !== user) {
-      return res.status(400).json({ message: "La sala ya está reservada para esta fecha y hora" });
+    // Verificar si se supera el límite de comensales
+    const maxNumberOfPeople = place === 'Sala' ? 28 : 24; // Límite de comensales por zona
+    if (people > maxNumberOfPeople) {
+      return res.status(400).json({ message: `Se ha superado el número máximo de comensales en ${place}` });
     }
 
-    // Si no hay reserva existente, crea una nueva reserva
+    // Verificar si se supera el límite total de reservas
+    // Coloca tu lógica para verificar el límite total aquí
+    const totalReservations = await Reservation.countDocuments();
+    if (totalReservations >= 100) {
+      return res.status(400).json({ message: 'Se ha superado el número máximo de reservas en la web. Por favor, contacte con el restaurante.' });
+    }
+
+    // Si no se supera el límite, crea la reserva
     const newReservation = new Reservation({
-      user,
+      name,
       date,
-      duration,
       hour,
-      room
+      place,
+      people,
+      phoneNumber
     });
     await newReservation.save();
-    res.status(200).json(newReservation);
+    res.status(201).json(newReservation);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Hubo un error al crear la reserva" });
   }
 };
-
-
 
 // Controlador para eliminar una reserva
 export const deleteReservation = async (req, res) => {
@@ -49,9 +55,7 @@ export const deleteReservation = async (req, res) => {
 export const getReservationById = async (req, res) => {
   try {
     const { id } = req.params;
-    const reservation = await Reservation.findById(id)
-      .populate('user', 'username') // Aquí se especifica el campo 'username' que deseas obtener
-      .populate('room');
+    const reservation = await Reservation.findById(id);
     if (!reservation) {
       return res.status(404).json({ message: "Reserva no encontrada" });
     }
@@ -61,34 +65,36 @@ export const getReservationById = async (req, res) => {
   }
 };
 
-
 // Controlador para ver todas las reservas
 export const getAllReservations = async (req, res) => {
   try {
-    const reservations = await Reservation.find().populate('room').populate('user');
+    const reservations = await Reservation.find();
     res.json(reservations);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-//controlador para Actualizar reservas por Id
-
-
+// Controlador para actualizar una reserva por su ID
 export const updateReservationById = async (req, res) => {
   const { id } = req.params;
-  const { user, date, duration, hour, room } = req.body;
+  const { name, date, hour, place, people, phoneNumber } = req.body;
 
   try {
-    let newReservation = {
-      user,
-      date,
-      duration,
-      hour,
-      room
-    };
+    // Verificar si se supera el límite de comensales
+    const maxNumberOfPeople = place === 'Sala' ? 28 : 24; // Límite de comensales por zona
+    if (people > maxNumberOfPeople) {
+      return res.status(400).json({ message: `Se ha superado el número máximo de comensales en ${place}` });
+    }
 
-    const updatedReservation = await Reservation.findByIdAndUpdate(id, newReservation, { new: true });
+    const updatedReservation = await Reservation.findByIdAndUpdate(id, {
+      name,
+      date,
+      hour,
+      place,
+      people,
+      phoneNumber
+    }, { new: true });
 
     if (!updatedReservation) {
       return res.status(404).json({ message: "Reserva no encontrada" });

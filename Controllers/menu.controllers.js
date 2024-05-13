@@ -25,7 +25,7 @@ console.log(req.user);
 export const getMenu = async (req, res, next) =>{
     try {
         const startIndex = parseInt(req.query.startIndex) || 0;
-        const limit = parseInt(req.query.limit) || 6;
+        const limit = parseInt(req.query.limit) || 16;
         const sortDirection = req.query.order === 'asc' ? 1 : -1;
         
         const menu = await Menu.find({
