@@ -8,6 +8,6 @@ const router = express.Router();
 router.post('/create', verifyToken, create)
 router.get('/getmenu', getMenu)
 router.delete('/deletemenu/:menutId/:userId', verifyToken, deletemenu);
-router.put(`/updatemenu/:menuId/:userId`, verifyToken, updatemenu);
+router.put(`/update-menu/:menuId/:userId`, verifyToken, updatemenu);
 
 export default router;

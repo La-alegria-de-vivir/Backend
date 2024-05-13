@@ -82,8 +82,9 @@ export const updatemenu = async (req, res, next) => {
         {
           $set: {
             title: req.body.title,
-            content: req.body.content,
-            category: req.body.category,
+            price: req.body.price,
+            description: req.body.description,
+            alergenos: req.body.alergenos,
             image: req.body.image,
           },
         },
