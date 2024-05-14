@@ -1,5 +1,3 @@
-// 
-
 import Reservation from '../Models/reserveRoomsModels.js';
 
 // Controlador para crear una reserva
@@ -14,8 +12,7 @@ export const createReservation = async (req, res) => {
     }
 
     // Verificar si se supera el límite total de reservas
-    // Coloca tu lógica para verificar el límite total aquí
-    const totalReservations = await Reservation.countDocuments();
+      const totalReservations = await Reservation.countDocuments();
     if (totalReservations >= 100) {
       return res.status(400).json({ message: 'Se ha superado el número máximo de reservas en la web. Por favor, contacte con el restaurante.' });
     }
@@ -40,8 +37,8 @@ export const createReservation = async (req, res) => {
 // Controlador para eliminar una reserva
 export const deleteReservation = async (req, res, next) => {
   try {
-    const { reservationId } = req.params; // Cambiado a reservationId
-    const deletedReservation = await Reservation.findByIdAndDelete(reservationId); // Cambiado a reservationId
+    const { reservationId } = req.params; 
+    const deletedReservation = await Reservation.findByIdAndDelete(reservationId); 
     
     if (!deletedReservation) {
       return next(errorHandler(404, "Reserva no encontrada"));
@@ -83,18 +80,18 @@ export const getAllReservations = async (req, res) => {
 
 
 export const updateReservationById = async (req, res) => {
-  const { reservationsId } = req.params; // Cambiar de id a reservationsId
+  const { reservationsId } = req.params; 
   const { name, date, hour, place, people, phoneNumber } = req.body;
 
   try {
     // Verificar si la reserva existe
-    const existingReservation = await Reservation.findById(reservationsId); // Cambiar findById por findByIdAndUpdate
+    const existingReservation = await Reservation.findById(reservationsId); 
     if (!existingReservation) {
       return res.status(404).json({ message: "La reserva no existe" });
     }
 
     // Verificar si se supera el límite de comensales
-    const maxNumberOfPeople = place === 'Sala' ? 28 : 24; // Límite de comensales por zona
+    const maxNumberOfPeople = place === 'Sala' ? 28 : 24; 
     if (people > maxNumberOfPeople) {
       return res.status(400).json({ message: `Se ha superado el número máximo de comensales en ${place}` });
     }
