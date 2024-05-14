@@ -38,18 +38,22 @@ export const createReservation = async (req, res) => {
 };
 
 // Controlador para eliminar una reserva
-export const deleteReservation = async (req, res) => {
-  const { id } = req.params;
+export const deleteReservation = async (req, res, next) => {
   try {
-    const deletedReservation = await Reservation.findByIdAndDelete(id);
+    const { reservationId } = req.params; // Cambiado a reservationId
+    const deletedReservation = await Reservation.findByIdAndDelete(reservationId); // Cambiado a reservationId
+    
     if (!deletedReservation) {
-      return res.status(404).json({ message: "Reserva no encontrada" });
+      return next(errorHandler(404, "Reserva no encontrada"));
     }
-    res.json({ message: "Reserva eliminada exitosamente", deletedReservation });
+    
+    res.status(200).json({ message: "Reserva eliminada exitosamente", deletedReservation });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
+
+
 
 // Controlador para ver una reserva por su ID
 export const getReservationById = async (req, res) => {
@@ -76,30 +80,35 @@ export const getAllReservations = async (req, res) => {
 };
 
 // Controlador para actualizar una reserva por su ID
+
+
 export const updateReservationById = async (req, res) => {
-  const { id } = req.params;
+  const { reservationsId } = req.params; // Cambiar de id a reservationsId
   const { name, date, hour, place, people, phoneNumber } = req.body;
 
   try {
+    // Verificar si la reserva existe
+    const existingReservation = await Reservation.findById(reservationsId); // Cambiar findById por findByIdAndUpdate
+    if (!existingReservation) {
+      return res.status(404).json({ message: "La reserva no existe" });
+    }
+
     // Verificar si se supera el límite de comensales
     const maxNumberOfPeople = place === 'Sala' ? 28 : 24; // Límite de comensales por zona
     if (people > maxNumberOfPeople) {
       return res.status(400).json({ message: `Se ha superado el número máximo de comensales en ${place}` });
     }
 
-    const updatedReservation = await Reservation.findByIdAndUpdate(id, {
-      name,
-      date,
-      hour,
-      place,
-      people,
-      phoneNumber
-    }, { new: true });
+    // Actualizar la reserva
+    existingReservation.name = name;
+    existingReservation.date = date;
+    existingReservation.hour = hour;
+    existingReservation.place = place;
+    existingReservation.people = people;
+    existingReservation.phoneNumber = phoneNumber;
+    const updatedReservation = await existingReservation.save();
 
-    if (!updatedReservation) {
-      return res.status(404).json({ message: "Reserva no encontrada" });
-    }
-
+    // Responder con la reserva actualizada
     res.status(200).json({ message: "Reserva actualizada exitosamente", updatedReservation });
   } catch (error) {
     res.status(500).json({ message: "Hubo un error al actualizar la reserva", error });

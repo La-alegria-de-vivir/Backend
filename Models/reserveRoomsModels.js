@@ -63,7 +63,11 @@ const reservationSchema = new mongoose.Schema({
   phoneNumber: {
     type : String, // Cambiado a String para permitir formatos de teléfono más flexibles
     required: true 
-  }
+  },
+  slug: {
+    type: String,
+    unique: true // Esto hace que el campo sea único
+}
 }, { collection: "reservations" });
 
 const Reservation = mongoose.model('Reservation', reservationSchema);
