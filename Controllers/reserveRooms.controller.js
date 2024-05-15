@@ -111,3 +111,27 @@ export const updateReservationById = async (req, res) => {
   }
 };
 
+// Controlador para marcar una reserva como cerrada
+export const closeReservation = async (req, res) => {
+  const { reservationId } = req.params;
+
+  try {
+    // Buscar la reserva por su ID
+    const reservation = await Reservation.findById(reservationId);
+
+    if (!reservation) {
+      return res.status(404).json({ error: 'La reserva no fue encontrada.' });
+    }
+
+    // Marcar la reserva como cerrada
+    reservation.completed = true;
+
+    // Guardar la reserva actualizada en la base de datos
+    await reservation.save();
+
+    res.status(200).json({ message: 'La reserva ha sido marcada como cerrada.' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Hubo un error al marcar la reserva como cerrada.' });
+  }
+};
