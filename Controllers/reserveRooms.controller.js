@@ -81,7 +81,6 @@ export const getAllReservations = async (req, res) => {
 export const updateReservationById = async (req, res) => {
   const { reservationId } = req.params; // Corregir el nombre del parámetro
   const { name, date, hour, place, people, phoneNumber } = req.body;
-
   try {
     // Verificar si la reserva existe
     const existingReservation = await Reservation.findById(reservationId); 
@@ -94,6 +93,7 @@ export const updateReservationById = async (req, res) => {
     if (people > maxNumberOfPeople) {
       return res.status(400).json({ message: `Se ha superado el número máximo de comensales en ${place}` });
     }
+    
 
     // Actualizar la reserva
     existingReservation.name = name;

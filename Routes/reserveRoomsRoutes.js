@@ -8,7 +8,8 @@ router.delete('/deletereservations/:reservetId/:userId', verifyToken, deleteRese
 // router.get('/getreservations/:id',verifyToken,  getReservationById);
 router.get('/getreservations/:id?', getAllReservations);
 router.get('/getreservations',verifyToken,  getAllReservations);
-router.put('/update-revervations/:id', verifyToken, updateReservationById);
+router.put('/update-revervations/:reservationId', verifyToken, updateReservationById);
+
 
 
 export default router;
