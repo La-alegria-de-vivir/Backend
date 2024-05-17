@@ -112,26 +112,30 @@ export const updateReservationById = async (req, res) => {
 };
 
 // Controlador para marcar una reserva como cerrada
-export const closeReservation = async (req, res) => {
-  const { reservationId } = req.params;
-
+export const closeReservation = async (req, res, next) => {
   try {
-    // Buscar la reserva por su ID
-    const reservation = await Reservation.findById(reservationId);
+    const { reservationId } = req.params;
+    
+    console.log(`Intentando cerrar la reserva con ID: ${reservationId}`);
 
-    if (!reservation) {
-      return res.status(404).json({ error: 'La reserva no fue encontrada.' });
+    // Buscar y actualizar la reserva en una sola operación
+    const updatedReservation = await Reservation.findByIdAndUpdate(
+      reservationId,
+      { completed: true },
+      { new: true }
+    );
+
+    if (!updatedReservation) {
+      console.log(`Reserva con ID ${reservationId} no encontrada`);
+      return next(errorHandler(404, "Reserva no encontrada"));
     }
 
-    // Marcar la reserva como cerrada
-    reservation.completed = true;
+    console.log(`Reserva con ID ${reservationId} marcada como cerrada`);
 
-    // Guardar la reserva actualizada en la base de datos
-    await reservation.save();
-
-    res.status(200).json({ message: 'La reserva ha sido marcada como cerrada.' });
+    res.status(200).json({ message: "La reserva ha sido marcada como cerrada.", updatedReservation });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: 'Hubo un error al marcar la reserva como cerrada.' });
+    console.error(`Error al cerrar la reserva con ID ${reservationId}:`, error);
+    next(error);
   }
 };
+
