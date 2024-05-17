@@ -187,38 +187,37 @@ export const deleteReservation = async (req, res, next) => {
   }
 };
 
-// Controlador para ver una reserva por su ID
-export const getReservationById = async (req, res) => {
+
+
+export const getAllReservations = async (req, res) => {
   try {
     const { id } = req.params;
-    const reservation = await Reservation.findById(id);
-    if (!reservation) {
-      return res.status(404).json({ message: "Reserva no encontrada" });
+
+    if (id) {
+      // Si se proporciona un ID, buscar y devolver solo esa reserva
+      const reservation = await Reservation.findById(id);
+      if (!reservation) {
+        return res.status(404).json({ message: "Reserva no encontrada" });
+      }
+      return res.json(reservation);
+    } else {
+      // Si no se proporciona un ID, devolver todas las reservas
+      const reservations = await Reservation.find();
+      return res.json(reservations);
     }
-    res.json(reservation);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Controlador para ver todas las reservas
-export const getAllReservations = async (req, res) => {
-  try {
-    const reservations = await Reservation.find();
-    res.json(reservations);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
 // Controlador para actualizar una reserva por su ID
 export const updateReservationById = async (req, res) => {
-  const { reservationsId } = req.params; 
+  const { reservationId } = req.params; // Corregir el nombre del parámetro
   const { name, date, hour, place, people, phoneNumber } = req.body;
-
   try {
     // Verificar si la reserva existe
-    const existingReservation = await Reservation.findById(reservationsId); 
+    const existingReservation = await Reservation.findById(reservationId); 
     if (!existingReservation) {
       return res.status(404).json({ message: "La reserva no existe" });
     }
@@ -270,5 +269,30 @@ export const updateReservationById = async (req, res) => {
     res.status(200).json({ message: "Reserva actualizada exitosamente", updatedReservation });
   } catch (error) {
     res.status(500).json({ message: "Hubo un error al actualizar la reserva", error });
+  }
+};
+
+// Controlador para marcar una reserva como cerrada
+export const closeReservation = async (req, res) => {
+  const { reservationId } = req.params;
+
+  try {
+    // Buscar la reserva por su ID
+    const reservation = await Reservation.findById(reservationId);
+
+    if (!reservation) {
+      return res.status(404).json({ error: 'La reserva no fue encontrada.' });
+    }
+
+    // Marcar la reserva como cerrada
+    reservation.completed = true;
+
+    // Guardar la reserva actualizada en la base de datos
+    await reservation.save();
+
+    res.status(200).json({ message: 'La reserva ha sido marcada como cerrada.' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Hubo un error al marcar la reserva como cerrada.' });
   }
 };
