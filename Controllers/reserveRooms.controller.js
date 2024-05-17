@@ -215,26 +215,29 @@ export const getAllReservations = async (req, res) => {
 export const updateReservationById = async (req, res) => {
   const { reservationId } = req.params; // Corregir el nombre del parámetro
   const { name, date, hour, place, people, phoneNumber } = req.body;
+
   try {
     // Verificar si la reserva existe
-    const existingReservation = await Reservation.findById(reservationId); 
+    const existingReservation = await Reservation.findById(reservationId);
     if (!existingReservation) {
       return res.status(404).json({ message: "La reserva no existe" });
     }
 
     // Verificar si se supera el límite de comensales por zona
-    const maxNumberOfPeople = place === 'Sala' ? 28 : 24; 
+    const maxNumberOfPeople = place === 'Sala' ? 28 : 24;
     if (people > maxNumberOfPeople) {
       return res.status(400).json({ message: `Se ha superado el número máximo de comensales en ${place}` });
     }
 
     // Calcular la suma total de comensales en un período de dos horas
+    const hourInt = parseInt(hour.split(':')[0]); // Convertir la hora a entero
     const twoHourInterval = 2; // Intervalo de dos horas
     const reservationsInTwoHours = await Reservation.find({
       date: date,
-      hour: { $gte: hour, $lte: hour + twoHourInterval },
-      _id: { $ne: reservationsId } // Excluir la reserva actual
+      hour: { $gte: `${hourInt}:00`, $lt: `${hourInt + twoHourInterval}:00` },
+      _id: { $ne: reservationId } // Excluir la reserva actual
     });
+
     const totalPeopleInTwoHours = reservationsInTwoHours.reduce((total, reservation) => total + reservation.people, 0);
 
     // Verificar si se supera el límite total de comensales en el período de dos horas
@@ -243,8 +246,9 @@ export const updateReservationById = async (req, res) => {
       // Bloquear las dos horas siguientes
       const blockedHours = await Reservation.find({
         date: date,
-        hour: { $gte: hour + 1, $lte: hour + twoHourInterval }
+        hour: { $gte: `${hourInt + 1}:00`, $lt: `${hourInt + twoHourInterval}:00` }
       });
+
       const blockedHoursIds = blockedHours.map(reservation => reservation._id);
 
       // Actualizar las reservas bloqueadas
