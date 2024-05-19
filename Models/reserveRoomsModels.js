@@ -29,6 +29,10 @@ const reservationSchema = new mongoose.Schema({
   slug: {
     type: String,
     unique: true,
+},
+completed: {
+  type: Boolean,
+  default: false // Por defecto, la reserva no está completada
 }
 }, { collection: "reservations" });
 
