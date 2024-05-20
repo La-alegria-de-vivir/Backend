@@ -304,3 +304,17 @@ export const closeReservation = async (req, res, next) => {
   }
 };
 
+const getTotalReservations = async (req, res) => {
+  try {
+    const { startIndex, limit } = req.query; // Obtener startIndex y limit de los parámetros de la solicitud
+    const totalReservations = await Reservation.countDocuments();
+    const reservations = await Reservation.find().skip(parseInt(startIndex)).limit(parseInt(limit));
+    res.status(200).json({ totalReservations, reservations });
+  } catch (error) {
+    console.error("Error fetching total reservations:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+export { getTotalReservations };
