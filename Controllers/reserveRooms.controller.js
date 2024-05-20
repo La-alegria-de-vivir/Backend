@@ -188,9 +188,10 @@ export const deleteReservation = async (req, res, next) => {
 };
 
 
+
 export const getAllReservations = async (req, res) => {
   try {
-    const { id, name } = req.params;
+    const { id } = req.params;
 
     if (id) {
       // Si se proporciona un ID, buscar y devolver solo esa reserva
@@ -199,12 +200,8 @@ export const getAllReservations = async (req, res) => {
         return res.status(404).json({ message: "Reserva no encontrada" });
       }
       return res.json(reservation);
-    } else if (name) {
-      // Si se proporciona un nombre, buscar y devolver las reservas que coincidan con ese nombre
-      const reservations = await Reservation.find({ name: { $regex: name, $options: "i" } });
-      return res.json(reservations);
     } else {
-      // Si no se proporciona un ID ni un nombre, devolver todas las reservas
+      // Si no se proporciona un ID, devolver todas las reservas
       const reservations = await Reservation.find();
       return res.json(reservations);
     }
@@ -212,7 +209,6 @@ export const getAllReservations = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 
 // Controlador para actualizar una reserva por su ID
