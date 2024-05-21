@@ -70,8 +70,12 @@ export const deleteReservation = async (req, res, next) => {
   }
 };
 
+<<<<<<< HEAD
+// Controlador para obtener todas las reservas o una reserva específica
+=======
 
 
+>>>>>>> feature/updatereservations
 export const getAllReservations = async (req, res) => {
   try {
     const { id } = req.params;
