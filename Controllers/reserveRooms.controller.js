@@ -306,9 +306,25 @@ export const closeReservation = async (req, res, next) => {
 
 const getTotalReservations = async (req, res) => {
   try {
-    const { startIndex, limit } = req.query; // Obtener startIndex y limit de los parámetros de la solicitud
-    const totalReservations = await Reservation.countDocuments();
-    const reservations = await Reservation.find().skip(parseInt(startIndex)).limit(parseInt(limit));
+    const { startIndex, limit, name, date } = req.query;
+    let query = {};
+
+    if (name) {
+      query.name = { $regex: name, $options: 'i' };
+    }
+
+    if (date) {
+      const startDate = new Date(date);
+      const endDate = new Date(date);
+      endDate.setDate(endDate.getDate() + 1); // Agregar un día para incluir todas las reservas del día
+      query.date = {
+        $gte: startDate,
+        $lt: endDate
+      };
+    }
+
+    const totalReservations = await Reservation.countDocuments(query);
+    const reservations = await Reservation.find(query).skip(parseInt(startIndex)).limit(parseInt(limit));
     res.status(200).json({ totalReservations, reservations });
   } catch (error) {
     console.error("Error fetching total reservations:", error);
@@ -316,5 +332,6 @@ const getTotalReservations = async (req, res) => {
   }
 };
 
-
 export { getTotalReservations };
+
+
