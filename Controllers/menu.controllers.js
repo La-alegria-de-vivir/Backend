@@ -24,14 +24,14 @@ console.log(req.user);
 export const getMenu = async (req, res, next) =>{
     try {
         const startIndex = parseInt(req.query.startIndex) || 0;
-        const limit = parseInt(req.query.limit) || 16;
+        const limit = parseInt(req.query.limit) || 30;
         const sortDirection = req.query.order === 'asc' ? 1 : -1;
         
         const menu = await Menu.find({
             ...(req.query.userId && { userId: req.query.userId }),
             ...(req.query.category && { category: req.query.category }),
             ...(req.query.slug && { slug: req.query.slug }),
-            ...(req.query.menuntId && { _id: req.query.menuId }), // Coma agregada aquí
+            ...(req.query.menuntId && { _id: req.query.menuId }), 
         }).sort({ update: sortDirection}).skip(startIndex).limit(limit);
 
         const totalMenu = await Menu.countDocuments();
@@ -58,11 +58,7 @@ export const getMenu = async (req, res, next) =>{
         next(error)
     }
 };
-
 export const deletemenu = async (req, res, next) => {
-    if (!req.user.isAdmin || req.user.id !== req.params.userId) {
-        return next (errorHandler(403, 'You are not allowed to delete this menu'));
-    }
     try {
         await Menu.findByIdAndDelete(req.params.menuId);
         res.status(200).json('The menu has been deleted');
