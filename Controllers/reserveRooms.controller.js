@@ -1,4 +1,5 @@
 import Reservation from '../Models/reserveRoomsModels.js';
+import slugify from 'slugify';
 
 // Controlador para crear una reserva
 export const createReservation = async (req, res) => {
@@ -20,39 +21,48 @@ export const createReservation = async (req, res) => {
       place: place
     });
 
-    let totalPeople = 0;
-    sameTimeDayReservations.forEach(reservation => {
-      totalPeople += reservation.people;
-    });
+    let totalPeople = sameTimeDayReservations.reduce((total, reservation) => total + reservation.people, 0);
 
     // Verificar si se supera el límite de comensales en sala y terraza
     const maxPeopleInSala = 28;
     const maxPeopleInTerraza = 24;
 
-    if (place === 'sala' && totalPeople + people > maxPeopleInSala || place === 'terraza' && totalPeople + people > maxPeopleInTerraza) {
+    if ((place === 'Sala' && totalPeople + people > maxPeopleInSala) || (place === 'Terraza' && totalPeople + people > maxPeopleInTerraza)) {
+      const maxPeople = place === 'Sala' ? maxPeopleInSala : maxPeopleInTerraza;
       console.log(`Total de personas para el día ${date}, hora ${hour} en la ${place}: ${totalPeople}`);
-      return res.status(400).json({ message: `Se ha alcanzado el límite de ${place === 'sala' ? maxPeopleInSala : maxPeopleInTerraza} comensales permitidos para esta hora en la ${place}. No se puede realizar la reserva.` });
+      return res.status(400).json({ message: `Se ha alcanzado el límite de ${maxPeople} comensales permitidos para esta hora en la ${place}. No se puede realizar la reserva.` });
+    } else {
+      // Crear un slug único para la reserva
+      let uniqueSlug = slugify(name + '-' + reservationDate.getTime(), { lower: true });
+      while (await Reservation.findOne({ slug: uniqueSlug })) {
+        uniqueSlug = slugify(name + '-' + reservationDate.getTime() + '-' + Math.random().toString(36).substring(7), { lower: true });
+      }
+
+      // Crear la reserva si no se supera el límite
+      const newReservation = new Reservation({
+        name,
+        date: reservationDate,
+        hour,
+        place,
+        people,
+        phoneNumber,
+        slug: uniqueSlug
+      });
+
+      await newReservation.save();
+
+      console.log(`Total de personas para el día ${date}, hora ${hour} en la ${place}: ${totalPeople + people}`);
+
+      return res.status(201).json({ message: 'Reserva creada exitosamente.', reservation: newReservation });
     }
-
-    // Crear la reserva si no se supera el límite
-    const newReservation = new Reservation({
-      name,
-      date: reservationDate,
-      hour,
-      place,
-      people,
-      phoneNumber
-    });
-    await newReservation.save();
-
-    console.log(`Total de personas para el día ${date}, hora ${hour} en la ${place}: ${totalPeople + people}`);
-
-    return res.status(201).json({ message: 'Reserva creada exitosamente.', reservation: newReservation });
   } catch (error) {
     console.error('Error al crear reserva:', error);
     return res.status(500).json({ message: 'Error al crear reserva. Por favor, inténtalo de nuevo.' });
   }
 };
+
+
+
 
 // Controlador para eliminar una reserva
 export const deleteReservation = async (req, res, next) => {

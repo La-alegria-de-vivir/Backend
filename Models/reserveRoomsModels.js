@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 
 const reservationSchema = new mongoose.Schema({
@@ -29,6 +28,7 @@ const reservationSchema = new mongoose.Schema({
   slug: {
     type: String,
     unique: true,
+    required: true,
 },
 completed: {
   type: Boolean,
