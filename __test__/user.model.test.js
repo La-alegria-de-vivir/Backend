@@ -1,4 +1,4 @@
-import User from "../models/user.model"; 
+import User from "../Models/user.model.js";
 
 describe('User Model', () => {
   it('should have a defined schema', () => {

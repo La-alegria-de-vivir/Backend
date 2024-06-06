@@ -3,7 +3,7 @@ import User from '../Models/user.model';
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-jest.mock('../Models/user.model'); // Mock el modelo de usuario para evitar llamadas a la base de datos
+jest.mock('../Models/user.model'); 
 
 describe('Auth Controllers', () => {
   describe('signup', () => {
