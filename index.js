@@ -6,7 +6,7 @@ import menuRoutes from './Routes/menu.route.js';
 import reserveRoutes from './Routes/reserveRoomsRoutes.js';
 import cookieParser from "cookie-parser";
 import cors from 'cors';
-import db from "./database/db.js";
+import db from "./Database/db.js";
 
 dotenv.config();
 

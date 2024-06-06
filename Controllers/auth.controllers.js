@@ -2,7 +2,7 @@ import User from '../Models/user.model.js'
 import bcryptjs from 'bcryptjs'
 import { errorHandler } from '../Middlewares/error.js';
 import jwt from 'jsonwebtoken'
-import { privateKey, publicKey } from '../config/keypair.js';
+import { privateKey, publicKey } from '../Config/keypair.js';
 
 
 

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { publicKey } from '../config/keypair.js';
+import { publicKey } from '../Config/keypair.js';
 import { errorHandler } from './error.js';
 
 export const verifyToken = (req, res, next) => {
