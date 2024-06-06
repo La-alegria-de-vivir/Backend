@@ -1,5 +1,4 @@
 import express from "express";
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRoutes from './Routes/user.route.js';
 import authRoutes from './Routes/auth.Routes.js';
@@ -7,14 +6,11 @@ import menuRoutes from './Routes/menu.route.js';
 import reserveRoutes from './Routes/reserveRoomsRoutes.js';
 import cookieParser from "cookie-parser";
 import cors from 'cors';
+import db from "./database/db.js";
 
 dotenv.config();
 
-mongoose.connect(process.env.MONGO).then(() => {
-    console.log('Mongodb is connected');
-}).catch((err) => {
-    console.log(err);
-});
+db();
 
 const app = express();
 app.use(cookieParser());

@@ -2,6 +2,7 @@ import User from '../Models/user.model.js'
 import bcryptjs from 'bcryptjs'
 import { errorHandler } from '../Middlewares/error.js';
 import jwt from 'jsonwebtoken'
+import { privateKey, publicKey } from '../config/keypair.js';
 
 
 
@@ -43,8 +44,8 @@ export const signin = async (req, res, next)=> {
            return next(errorHandler(400, 'Invalid password'));
         }
         const token = jwt.sign
-           ( {id: validUser._id, isAdmin:validUser.isAdmin}, process.env.JWT_SECRET, { algorithm: 'RS256'});
-
+           ( {id: validUser._id, isAdmin:validUser.isAdmin} , privateKey, { algorithm: 'RS256'});
+            console.log(publicKey);
             const {password: pass, ...rest} = validUser._doc;
            res
            .status(200)
