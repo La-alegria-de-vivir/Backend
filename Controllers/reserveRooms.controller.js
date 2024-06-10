@@ -1,20 +1,20 @@
 import Reservation from '../Models/reserveRoomsModels.js';
 import slugify from 'slugify';
 
-// Controlador para crear una reserva
+
 export const createReservation = async (req, res) => {
   const { name, date, hour, place, people, phoneNumber } = req.body;
 
   try {
-    // Convertir la fecha seleccionada del formulario a un formato válido
+  
     const reservationDate = new Date(date);
 
-    // Validar que se hayan enviado todos los datos requeridos
+    
     if (!name || !date || !hour || !place || !people || !phoneNumber) {
       return res.status(400).json({ message: 'Faltan datos obligatorios para crear la reserva.' });
     }
 
-    // Calcular la suma de personas para el mismo día, hora y lugar
+   
     const sameTimeDayReservations = await Reservation.find({
       date: reservationDate,
       hour: hour,
@@ -23,7 +23,7 @@ export const createReservation = async (req, res) => {
 
     let totalPeople = sameTimeDayReservations.reduce((total, reservation) => total + reservation.people, 0);
 
-    // Verificar si se supera el límite de comensales en sala y terraza
+   
     const maxPeopleInSala = 28;
     const maxPeopleInTerraza = 24;
 
@@ -38,7 +38,6 @@ export const createReservation = async (req, res) => {
         uniqueSlug = slugify(name + '-' + reservationDate.getTime() + '-' + Math.random().toString(36).substring(7), { lower: true });
       }
 
-      // Crear la reserva si no se supera el límite
       const newReservation = new Reservation({
         name,
         date: reservationDate,
@@ -64,7 +63,6 @@ export const createReservation = async (req, res) => {
 
 
 
-// Controlador para eliminar una reserva
 export const deleteReservation = async (req, res, next) => {
   try {
     const { reservationId } = req.params;
@@ -87,14 +85,14 @@ export const getAllReservations = async (req, res) => {
     const { id } = req.params;
 
     if (id) {
-      // Si se proporciona un ID, buscar y devolver solo esa reserva
+     
       const reservation = await Reservation.findById(id);
       if (!reservation) {
         return res.status(404).json({ message: "Reserva no encontrada" });
       }
       return res.json(reservation);
     } else {
-      // Si no se proporciona un ID, devolver todas las reservas
+     
       const reservations = await Reservation.find();
       return res.json(reservations);
     }
@@ -103,44 +101,42 @@ export const getAllReservations = async (req, res) => {
   }
 };
 
-// Controlador para actualizar una reserva por su ID
+
 export const updateReservationById = async (req, res) => {
   const { reservationId } = req.params;
   const { name, date, hour, place, people, phoneNumber } = req.body;
 
   try {
-    // Verificar si la reserva existe
+    
     const existingReservation = await Reservation.findById(reservationId);
     if (!existingReservation) {
       return res.status(404).json({ message: "La reserva no existe" });
     }
 
-    // Verificar si se supera el límite de comensales por zona
+    
     const maxNumberOfPeople = place === 'sala' ? 28 : 24;
     if (people > maxNumberOfPeople) {
       return res.status(400).json({ message: `Se ha superado el número máximo de comensales en ${place}` });
     }
 
-    // Calcular la suma total de comensales en un período de dos horas
-    const twoHourInterval = 2; // Intervalo de dos horas
+    const twoHourInterval = 2; 
     const reservationsInTwoHours = await Reservation.find({
       date: new Date(date),
       hour: { $gte: hour, $lt: hour + twoHourInterval },
-      _id: { $ne: reservationId } // Excluir la reserva actual
+      _id: { $ne: reservationId } 
     });
     const totalPeopleInTwoHours = reservationsInTwoHours.reduce((total, reservation) => total + reservation.people, 0);
 
-    // Verificar si se supera el límite total de comensales en el período de dos horas
-    const totalCapacity = 28; // Capacidad total en dos horas
+
     if (totalPeopleInTwoHours + people > totalCapacity) {
-      // Bloquear las dos horas siguientes
+     
       const blockedHours = await Reservation.find({
         date: new Date(date),
         hour: { $gte: hour + 1, $lt: hour + twoHourInterval }
       });
       const blockedHoursIds = blockedHours.map(reservation => reservation._id);
 
-      // Actualizar las reservas bloqueadas
+      
       await Reservation.updateMany(
         { _id: { $in: blockedHoursIds } },
         { $set: { blocked: true } }
@@ -149,7 +145,7 @@ export const updateReservationById = async (req, res) => {
       return res.status(400).json({ message: 'Se ha superado el número máximo de comensales en este período de dos horas. Las reservas en las próximas dos horas han sido bloqueadas.' });
     }
 
-    // Actualizar la reserva
+   
     existingReservation.name = name;
     existingReservation.date = new Date(date);
     existingReservation.hour = hour;
@@ -158,21 +154,20 @@ export const updateReservationById = async (req, res) => {
     existingReservation.phoneNumber = phoneNumber;
     const updatedReservation = await existingReservation.save();
 
-    // Responder con la reserva actualizada
+    
     res.status(200).json({ message: "Reserva actualizada exitosamente", updatedReservation });
   } catch (error) {
     res.status(500).json({ message: "Hubo un error al actualizar la reserva", error });
   }
 };
 
-// Controlador para marcar una reserva como cerrada
+
 export const closeReservation = async (req, res, next) => {
   try {
     const { reservationId } = req.params;
     
     console.log(`Intentando cerrar la reserva con ID: ${reservationId}`);
 
-    // Buscar y actualizar la reserva en una sola operación
     const updatedReservation = await Reservation.findByIdAndUpdate(
       reservationId,
       { completed: true },
@@ -205,7 +200,7 @@ const getTotalReservations = async (req, res) => {
     if (date) {
       const startDate = new Date(date);
       const endDate = new Date(date);
-      endDate.setDate(endDate.getDate() + 1); // Agregar un día para incluir todas las reservas del día
+      endDate.setDate(endDate.getDate() + 1); 
       query.date = {
         $gte: startDate,
         $lt: endDate
