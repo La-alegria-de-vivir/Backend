@@ -44,7 +44,7 @@ Al instalarse el proyecto en la consola se deben tener en cuenta las siguientes 
 
 ## Metodologías Ágiles
 
-- <a href="#">Deploy</a>
+- <a href="https://backend-la-alegria-de-vivir.onrender.com/">Deploy</a>
 
 ## Licencia
 
@@ -55,6 +55,6 @@ Las fuentes utilizadas en este proyecto estan sujetas a licencia SIL con Copyrig
 ## Test 
 
 Se han hecho varios test para el backend para el controlador 
-![imagen del test de backend]()
+[imagen del test de backend](https://drive.google.com/drive/u/0/folders/1PwJTw0d5W2ND_ZR851c8zKGMAEEuflrf)
 
 
