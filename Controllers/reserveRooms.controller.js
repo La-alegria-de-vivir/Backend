@@ -107,36 +107,38 @@ export const updateReservationById = async (req, res) => {
   const { name, date, hour, place, people, phoneNumber } = req.body;
 
   try {
-    
+    // Verificar si la reserva existe
     const existingReservation = await Reservation.findById(reservationId);
     if (!existingReservation) {
       return res.status(404).json({ message: "La reserva no existe" });
     }
 
-    
+    // Verificar si se supera el límite de comensales por zona
     const maxNumberOfPeople = place === 'sala' ? 28 : 24;
     if (people > maxNumberOfPeople) {
       return res.status(400).json({ message: `Se ha superado el número máximo de comensales en ${place}` });
     }
 
-    const twoHourInterval = 2; 
+    // Calcular la suma total de comensales en un período de dos horas
+    const twoHourInterval = 2; // Intervalo de dos horas
     const reservationsInTwoHours = await Reservation.find({
       date: new Date(date),
       hour: { $gte: hour, $lt: hour + twoHourInterval },
-      _id: { $ne: reservationId } 
+      _id: { $ne: reservationId } // Excluir la reserva actual
     });
     const totalPeopleInTwoHours = reservationsInTwoHours.reduce((total, reservation) => total + reservation.people, 0);
 
-
+    // Verificar si se supera el límite total de comensales en el período de dos horas
+    const totalCapacity = 28; // Capacidad total en dos horas
     if (totalPeopleInTwoHours + people > totalCapacity) {
-     
+      // Bloquear las dos horas siguientes
       const blockedHours = await Reservation.find({
         date: new Date(date),
         hour: { $gte: hour + 1, $lt: hour + twoHourInterval }
       });
       const blockedHoursIds = blockedHours.map(reservation => reservation._id);
 
-      
+      // Actualizar las reservas bloqueadas
       await Reservation.updateMany(
         { _id: { $in: blockedHoursIds } },
         { $set: { blocked: true } }
@@ -145,7 +147,7 @@ export const updateReservationById = async (req, res) => {
       return res.status(400).json({ message: 'Se ha superado el número máximo de comensales en este período de dos horas. Las reservas en las próximas dos horas han sido bloqueadas.' });
     }
 
-   
+    // Actualizar la reserva
     existingReservation.name = name;
     existingReservation.date = new Date(date);
     existingReservation.hour = hour;
@@ -154,7 +156,7 @@ export const updateReservationById = async (req, res) => {
     existingReservation.phoneNumber = phoneNumber;
     const updatedReservation = await existingReservation.save();
 
-    
+    // Responder con la reserva actualizada
     res.status(200).json({ message: "Reserva actualizada exitosamente", updatedReservation });
   } catch (error) {
     res.status(500).json({ message: "Hubo un error al actualizar la reserva", error });
